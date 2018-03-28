@@ -1,0 +1,427 @@
+{
+    "plugin_id": "netatmoweath",
+    "name_fr": "Station météo Netatmo",
+    "name_en": "Netatmo weather station",
+    "icon": "netatmo_weather.png",
+    "version": "7.0",
+    "creation_date": "2017-12-05",
+    "modification_date": "2018-03-17",
+    "author": "<a href='https://twitter.com/Thibautg16' target='_blank'>@Thibautg16</a> / <a href='https://github.com/Thibautg16/NetatmoWeatherAppEedomus' target='_blank'> GitHub </a>",
+    "description_fr": "Gestion avancée de votre <a href='https://www.netatmo.com/fr-FR/product/weather/' target='_blank'>Statio météo Netatmo</a> depuis votre box Eedomus.<br/>Application personnalisable, vous pouvez choisir d'installer ou non les canaux optionnels",
+    "description_en": "Advanced management of your <a href='https://www.netatmo.com/en-GB/product/weather//' target='_blank'>Netatmo weather station</a> from your Eedomus box.<br/>Customizable application, you can choose to install or not the optional channels",
+    "forum_link": "",
+    "parameters":
+        [
+            {
+                "parameter": "configuration",
+                "description": "--------- Configuration ----------",
+                "xtype": "textfield",
+                "field": "allowBlank: true, width: 0, style: 'visibility:hidden;'"
+            },            
+            {
+                "parameter": "oauth_code", 
+                "description": "Code d'autorisation Oauth Netatmo :",
+                "xtype": "textfield",
+                "field": "allowBlank: false, maxLength:32, minLength:32, width: 240"
+            },
+            {
+                "parameter": "oauth_url", 
+                "description": "",
+                "xtype": "displayfield",
+                "field": "style: 'padding: 3px;', value: 'Cliquez <a href=\\'javascript:genericRegister(\"netatmo\");\\'>ici pour obtenir votre code code d\\'autorisation</a>'"
+            },
+            {
+                "parameter": "station_mac",
+                "description": "Adresse MAC de votre Station Netatmo :",
+                "xtype": "textfield",
+                "field": "width:130, allowBlank:true"
+            },
+            {
+                "parameter": "choix_canaux_vide",
+                "description": "",
+                "xtype": "textfield",
+                "field": "allowBlank: true, width: 0, style: 'visibility:hidden;'"
+            },
+            {
+                "parameter": "choix_canaux",
+                "description": "--------- Choix des canaux ----------",
+                "xtype": "textfield",
+                "field": "allowBlank: true, width: 0, style: 'visibility:hidden;'"
+            },            
+            {
+                "parameter": "box_co2",
+                "description": "Station Météo - Co2 :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: true"              
+            },  
+            {
+                "parameter": "box_humidite",
+                "description": "Station Météo - Humidité :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: true"              
+            },                     
+            {
+                "parameter": "box_pression",
+                "description": "Station Météo - Pression :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: true"              
+            }, 
+            {
+                "parameter": "box_sonore",
+                "description": "Station Météo - Niveau Sonore :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: true"              
+            }, 
+            {
+                "parameter": "box_wifi",
+                "description": "Station Météo - Signal wifi :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: false"               
+            },
+            {
+                "parameter": "box_temperature_trend",
+                "description": "Station Méteo - Tendance Température :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: false"
+            },
+            {
+                "parameter": "box_pression_trend",
+                "description": "Station Météo - Tendance Pression :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: false"              
+            },             
+            {
+                "parameter": "box_temperature_ext",
+                "description": "Module extérieur - Température :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: true"
+            },
+            {
+                "parameter": "box_temperature_trend_ext",
+                "description": "Module extérieur - Tendance Température :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: false"
+            },
+            {
+                "parameter": "box_humidite_ext",
+                "description": "Module extérieur - Humidité :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: true"
+            },
+            {
+                "parameter": "box_rf_ext",
+                "description": "Module extérieur - Signal radio :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: false"
+            },
+            {
+                "parameter": "box_batt_ext",
+                "description": "Module extérieur - Batterie :",
+                "xtype": "checkbox",
+                "field": "style: 'margin-top: 6px;', checked: false"
+            }			
+        ],
+    "scripts":
+        [
+            {
+                "name": "netatmo_oauth.php"
+            }
+        ],        
+    "devices":
+        [
+            {
+                "device_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - T°",
+                "utilisation_id":"7",
+                "value_unit": "°C",
+                "icon": "netatmo_temp.png",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code",  
+                        "VAR2": "plugin.parameters.station_mac",                 
+                        "value_type": "float",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/internal/temperature",
+                        "POLLING": "5"
+                    }
+            },
+            {
+                "device_id": "temperature_trend",
+                "create":"plugin.parameters.box_temperature_trend",
+                "parent_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - Tendance T°",
+                "utilisation_id":"35",
+                "icon": "netatmo_temp.png",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code",
+                        "VAR2": "plugin.parameters.station_mac",                    
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/internal/temp_trend",
+                        "POLLING": "5"
+                    },
+                    "values":
+                    [
+                        { "value": "up", "icon": "tendance_temp_up.png", "description": "Monte"},
+                        { "value": "stable", "icon": "tendance_temp_stable.png", "description": "Stable"},
+                        { "value": "down", "icon": "tendance_temp_baisse.png", "description": "Baisse"}
+                    ]                     
+            },            
+            {
+                "device_id": "co2",
+                "create":"plugin.parameters.box_co2",
+                "parent_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - CO2",
+                "utilisation_id":"35",
+                "value_unit": "ppm",
+                "icon": "netatmo_co2.png",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code",  
+                        "VAR2": "plugin.parameters.station_mac",                  
+                        "value_type": "float",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/internal/co2",
+                        "POLLING": "5"
+                    }
+            },
+            {
+                "device_id": "humidite",
+                "create":"plugin.parameters.box_humidite",
+                "parent_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - Humidité",
+                "utilisation_id":"22",
+                "value_unit": "%",
+                "icon": "netatmo_hum.png",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code",
+                        "VAR2": "plugin.parameters.station_mac",                    
+                        "value_type": "float",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/internal/humidity",
+                        "POLLING": "5"
+                    }
+            },
+            {
+                "device_id": "pression",
+                "create":"plugin.parameters.box_pression",
+                "parent_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - Pression",
+                "utilisation_id":"32",
+                "value_unit": "hPa",
+                "icon": "netatmo_pression.png",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code",    
+                        "VAR2": "plugin.parameters.station_mac",                
+                        "value_type": "float",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/internal/pressure",
+                        "POLLING": "5"
+                    }
+            },
+            {
+                "device_id": "pression_trend",
+                "create":"plugin.parameters.box_pression_trend",
+                "parent_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - Tendance Pression",
+                "utilisation_id":"35",
+                "icon": "netatmo_pression.png",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code",
+                        "VAR2": "plugin.parameters.station_mac",                    
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/internal/pressure_trend",
+                        "POLLING": "5"
+                    },
+                    "values":
+                    [
+                        { "value": "up", "icon": "tendance_press_hausse.png", "description": "Monte"},
+                        { "value": "stable", "icon": "tendance_press_ok.png", "description": "Stable"},
+                        { "value": "down", "icon": "tendance_press_baisse.png", "description": "Baisse"}
+                    ]                     
+            },             
+            {
+                "device_id": "niveau_sonore",
+                "create":"plugin.parameters.box_sonore",
+                "parent_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - Niveau sonore",
+                "utilisation_id":"35",
+                "value_unit": "dB",
+                "icon": "niveau_de_bruit.png",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code",    
+                        "VAR2": "plugin.parameters.station_mac",                
+                        "value_type": "float",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/internal/soundlevel",
+                        "POLLING": "5"
+                    }
+            },
+            {
+                "device_id": "wifi",
+                "create":"plugin.parameters.box_wifi",
+                "module_id": "51",
+                "parent_id": "temperature",
+                "type": "http",
+                "name_fr": "plugin.name - Wifi",
+                "utilisation_id":"35",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code",
+                        "VAR2": "plugin.parameters.station_mac", 
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/internal/wifi_status",
+                        "POLLING": "5"
+                    },
+                "values":
+                    [
+                        { "value": "0", "icon": "meteo_max.png", "description": "Bon"},
+                        { "value": "1", "icon": "meteo_moy.png", "description": "Moyen"},
+                        { "value": "2", "icon": "meteo_min.png", "description": "Faible"}
+                    ]        
+            },           
+            {
+                "device_id": "temperature_ext",
+                "create":"plugin.parameters.box_temperature_ext",
+                "parent_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - T° Ext.",
+                "utilisation_id":"7",
+                "value_unit": "°C",
+                "icon": "netatmo_temp_ext.png",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code",  
+                        "VAR2": "plugin.parameters.station_mac",                  
+                        "value_type": "float",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/extension_1/temperature",
+                        "POLLING": "5"
+                    }
+            },
+            {
+                "device_id": "temperature_trend_ext",
+                "create":"plugin.parameters.box_temperature_trend_ext",
+                "parent_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - Tendance T° Ext.",
+                "utilisation_id":"35",
+                "icon": "netatmo_temp_ext.png",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code", 
+                        "VAR2": "plugin.parameters.station_mac",                   
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/extension_1/temp_trend",
+                        "POLLING": "5"
+                    },
+                    "values":
+                    [
+                        { "value": "up", "icon": "tendance_temp_up.png", "description": "Monte"},
+                        { "value": "stable", "icon": "tendance_temp_stable.png", "description": "Stable"},
+                        { "value": "down", "icon": "tendance_temp_baisse.png", "description": "Baisse"}
+                    ]                     
+            },
+            {
+                "device_id": "humidite_ext",
+                "create":"plugin.parameters.box_humidite_ext",
+                "parent_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - Humidité Ext.",
+                "utilisation_id":"22",
+                "value_unit": "%",
+                "icon": "netatmo_hum_ext.png",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code",  
+                        "VAR2": "plugin.parameters.station_mac",                  
+                        "value_type": "float",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/extension_1/humidity",
+                        "POLLING": "5"
+                    }
+            },
+            {
+                "device_id": "batt_ext",
+                "create":"plugin.parameters.box_batt_ext",
+                "parent_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - Batterie Ext.",
+                "utilisation_id":"22",
+                "value_unit": "%",
+                "icon": "Batterie.png",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code", 
+                        "VAR2": "plugin.parameters.station_mac",                   
+                        "value_type": "float",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/extension_1/battery_percent",
+                        "POLLING": "5"
+                    }
+            },  
+            {
+                "device_id": "rf_ext",
+                "create":"plugin.parameters.box_rf_ext",
+                "parent_id": "temperature",
+                "module_id": "51",
+                "type": "http",
+                "name_fr": "plugin.name - RF Ext.",
+                "utilisation_id":"35",
+                "parameters":
+                    {
+                        "VAR1": "plugin.parameters.oauth_code", 
+                        "VAR2": "plugin.parameters.station_mac", 
+                        "value_type": "list",
+                        "ignore_errors": 3,
+                        "RAW_URL": "http://localhost/script/?exec=netatmo_oauth.php&oauth_code=[VAR1]&device_id=[VAR2]",
+                        "RAW_XPATH": "/netatmo/extension_1/rf_status",
+                        "POLLING": "5"
+                    },
+                "values":
+                    [
+                        { "value": "0", "icon": "meteo_max.png", "description": "Bon"},
+                        { "value": "1", "icon": "meteo_moy.png", "description": "Moyen"},
+                        { "value": "2", "icon": "meteo_min.png", "description": "Faible"}
+                    ]        
+            }
+        ]
+}
