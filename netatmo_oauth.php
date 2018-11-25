@@ -14,19 +14,22 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with This program. If not, see <http://www.gnu.org/licenses/>.
+#
+# v7.1.1
 
-function sdk_deg_to_dir($deg)
-{
-  $val = floor(($deg / 22.5) + 0.5);
-  $arr = array("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW");
-  return $arr[$val % 16];
-}
 $api_url = 'https://api.netatmo.com';
 $code = getArg('oauth_code');
 $prev_code = loadVariable('code');
 $CACHE_DURATION = 5; // minutes
 $device_id = $_GET['device_id'];
-$last_xml_success = loadVariable('last_xml_success'.$device_id);
+$device_id_str = str_replace(':', '', $device_id);
+$last_xml_success = loadVariable('last_xml_success'.$device_id_str);
+
+function sdk_deg_to_dir($deg){
+  $val = floor(($deg / 22.5) + 0.5);
+  $arr = array("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW");
+  return $arr[$val % 16];
+}
 
 function sdk_netatmo_check_devices($json_devices){
 	if ($json_devices['error']['code'] == 2 /*invalid access token*/)
@@ -50,22 +53,19 @@ function sdk_netatmo_devices_html($json_devices){
 		$html .= '<br/>';
 		$html .= '<ul>';
 	}
-
 	for ($i = 0; $i < sizeof($json_devices['body']['devices']); $i++){
 		$html .= '<li><b>'.$json_devices['body']['devices'][$i]['station_name'].'</b>: <input onclick="this.select();" type="text" size="40" readonly="readonly" value="'.$json_devices['body']['devices'][$i]['_id'].'" /></li>';
 	}
-
 	if(sizeof($json_devices) > 0){
 		$html .= '</ul>';
 	}
-
 	return $html;
 }
 
 if ((time() - $last_xml_success) / 60 < $CACHE_DURATION)
 {
 	sdk_header('text/xml');
-	$cached_xml = loadVariable('cached_xml'.$device_id);
+	$cached_xml = loadVariable('cached_xml'.$device_id_str);
 	echo $cached_xml;
 	die();
 }
@@ -123,7 +123,6 @@ if ($_GET['mode'] == 'verify'){
 	$json_devices = sdk_json_decode($result_devices);
 	sdk_netatmo_check_devices($json_devices);
 	$devices_html=sdk_netatmo_devices_html($json_devices);
-
 	?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -145,7 +144,6 @@ if ($_GET['mode'] == 'verify'){
 	echo "Vous pouvez ensuite fermer cette page.</p>";
 	die();
 }
-
 // l'utilisateur indique un device_id (si plusieurs station sur le même compte)
 if($device_id != ""){
 	$url_devices = $api_url.'/api/getstationsdata?device_id='.$device_id.'&access_token='.$access_token;
@@ -153,7 +151,6 @@ if($device_id != ""){
 else{
 	$url_devices = $api_url.'/api/getstationsdata?access_token='.$access_token;
 }
-
 $result_devices = httpQuery($url_devices);
 // gestion offline pour debug
 //saveVariable('result_devices', $result_devices); die();
@@ -300,7 +297,7 @@ echo $cached_xml;
 $cached_xml = str_replace('<cached>0</cached>', '<cached>1</cached>', $cached_xml);
 if ($xml_content != '') // non vide
 {
-	saveVariable('cached_xml'.$device_id, $cached_xml);
-	saveVariable('last_xml_success'.$device_id, time());
+	saveVariable('cached_xml'.$device_id_str, $cached_xml);
+	saveVariable('last_xml_success'.$device_id_str, time());
 }
 ?>
